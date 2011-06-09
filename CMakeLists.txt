@@ -20,13 +20,11 @@ find_package( PythonLibs REQUIRED)
 # message(STATUS "Python_Includes=${PYTHON_INCLUDE_DIRS}")
 
 ADD_DEFINITIONS(-Wall -Wno-deprecated)
-include_directories(${CMAKE_SOURCE_DIR}/. ${Boost_INCLUDES} ${PYTHON_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS}/numpy)
+include_directories(${CMAKE_SOURCE_DIR}/src ${Boost_INCLUDES} ${PYTHON_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS}/numpy)
 
-# ADD_EXECUTABLE(rbfnetwork2 main.cpp rbfnetwork.cpp logreader.cpp readlog_train.cpp test_rbfn.cpp rbfn_analysis.cpp create_training_set.cpp rbfset.cpp)
 
-# ADD_LIBRARY(pyrbfnet SHARED rbfnetwork.cpp bindings.cpp rbfset.cpp)
-ADD_LIBRARY(rbfnetwork SHARED rbfnetwork.cpp)
-ADD_LIBRARY(pyrbfnet SHARED rbfnetwork.cpp rbfn_bindings.cpp)
+ADD_LIBRARY(rbfnetwork SHARED src/rbfnetwork.cpp)
+ADD_LIBRARY(pyrbfnet SHARED src/rbfnetwork.cpp src/rbfn_bindings.cpp)
 
-# TARGET_LINK_LIBRARIES(rbfnetwork2 lapack-3 boost_serialization)
+TARGET_LINK_LIBRARIES(rbfnetwork ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} lapack)
 TARGET_LINK_LIBRARIES(pyrbfnet ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} lapack)

@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/pezzotto/Projects/pyrbfnetwork
+CMAKE_SOURCE_DIR = /home/pezzotto/Projects/Robotics-Applications/pyrbfnetwork
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/pezzotto/Projects/pyrbfnetwork
+CMAKE_BINARY_DIR = /home/pezzotto/Projects/Robotics-Applications/pyrbfnetwork
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/pezzotto/Projects/pyrbfnetwork/CMakeFiles /home/pezzotto/Projects/pyrbfnetwork/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pezzotto/Projects/Robotics-Applications/pyrbfnetwork/CMakeFiles /home/pezzotto/Projects/Robotics-Applications/pyrbfnetwork/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/pezzotto/Projects/pyrbfnetwork/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/pezzotto/Projects/Robotics-Applications/pyrbfnetwork/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -124,56 +124,56 @@ rbfnetwork/fast:
 	$(MAKE) -f CMakeFiles/rbfnetwork.dir/build.make CMakeFiles/rbfnetwork.dir/build
 .PHONY : rbfnetwork/fast
 
-rbfn_bindings.o: rbfn_bindings.cpp.o
-.PHONY : rbfn_bindings.o
+src/rbfn_bindings.o: src/rbfn_bindings.cpp.o
+.PHONY : src/rbfn_bindings.o
 
 # target to build an object file
-rbfn_bindings.cpp.o:
-	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/rbfn_bindings.cpp.o
-.PHONY : rbfn_bindings.cpp.o
+src/rbfn_bindings.cpp.o:
+	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/src/rbfn_bindings.cpp.o
+.PHONY : src/rbfn_bindings.cpp.o
 
-rbfn_bindings.i: rbfn_bindings.cpp.i
-.PHONY : rbfn_bindings.i
+src/rbfn_bindings.i: src/rbfn_bindings.cpp.i
+.PHONY : src/rbfn_bindings.i
 
 # target to preprocess a source file
-rbfn_bindings.cpp.i:
-	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/rbfn_bindings.cpp.i
-.PHONY : rbfn_bindings.cpp.i
+src/rbfn_bindings.cpp.i:
+	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/src/rbfn_bindings.cpp.i
+.PHONY : src/rbfn_bindings.cpp.i
 
-rbfn_bindings.s: rbfn_bindings.cpp.s
-.PHONY : rbfn_bindings.s
+src/rbfn_bindings.s: src/rbfn_bindings.cpp.s
+.PHONY : src/rbfn_bindings.s
 
 # target to generate assembly for a file
-rbfn_bindings.cpp.s:
-	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/rbfn_bindings.cpp.s
-.PHONY : rbfn_bindings.cpp.s
+src/rbfn_bindings.cpp.s:
+	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/src/rbfn_bindings.cpp.s
+.PHONY : src/rbfn_bindings.cpp.s
 
-rbfnetwork.o: rbfnetwork.cpp.o
-.PHONY : rbfnetwork.o
+src/rbfnetwork.o: src/rbfnetwork.cpp.o
+.PHONY : src/rbfnetwork.o
 
 # target to build an object file
-rbfnetwork.cpp.o:
-	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/rbfnetwork.cpp.o
-	$(MAKE) -f CMakeFiles/rbfnetwork.dir/build.make CMakeFiles/rbfnetwork.dir/rbfnetwork.cpp.o
-.PHONY : rbfnetwork.cpp.o
+src/rbfnetwork.cpp.o:
+	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/src/rbfnetwork.cpp.o
+	$(MAKE) -f CMakeFiles/rbfnetwork.dir/build.make CMakeFiles/rbfnetwork.dir/src/rbfnetwork.cpp.o
+.PHONY : src/rbfnetwork.cpp.o
 
-rbfnetwork.i: rbfnetwork.cpp.i
-.PHONY : rbfnetwork.i
+src/rbfnetwork.i: src/rbfnetwork.cpp.i
+.PHONY : src/rbfnetwork.i
 
 # target to preprocess a source file
-rbfnetwork.cpp.i:
-	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/rbfnetwork.cpp.i
-	$(MAKE) -f CMakeFiles/rbfnetwork.dir/build.make CMakeFiles/rbfnetwork.dir/rbfnetwork.cpp.i
-.PHONY : rbfnetwork.cpp.i
+src/rbfnetwork.cpp.i:
+	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/src/rbfnetwork.cpp.i
+	$(MAKE) -f CMakeFiles/rbfnetwork.dir/build.make CMakeFiles/rbfnetwork.dir/src/rbfnetwork.cpp.i
+.PHONY : src/rbfnetwork.cpp.i
 
-rbfnetwork.s: rbfnetwork.cpp.s
-.PHONY : rbfnetwork.s
+src/rbfnetwork.s: src/rbfnetwork.cpp.s
+.PHONY : src/rbfnetwork.s
 
 # target to generate assembly for a file
-rbfnetwork.cpp.s:
-	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/rbfnetwork.cpp.s
-	$(MAKE) -f CMakeFiles/rbfnetwork.dir/build.make CMakeFiles/rbfnetwork.dir/rbfnetwork.cpp.s
-.PHONY : rbfnetwork.cpp.s
+src/rbfnetwork.cpp.s:
+	$(MAKE) -f CMakeFiles/pyrbfnet.dir/build.make CMakeFiles/pyrbfnet.dir/src/rbfnetwork.cpp.s
+	$(MAKE) -f CMakeFiles/rbfnetwork.dir/build.make CMakeFiles/rbfnetwork.dir/src/rbfnetwork.cpp.s
+.PHONY : src/rbfnetwork.cpp.s
 
 # Help Target
 help:
@@ -185,12 +185,12 @@ help:
 	@echo "... pyrbfnet"
 	@echo "... rbfnetwork"
 	@echo "... rebuild_cache"
-	@echo "... rbfn_bindings.o"
-	@echo "... rbfn_bindings.i"
-	@echo "... rbfn_bindings.s"
-	@echo "... rbfnetwork.o"
-	@echo "... rbfnetwork.i"
-	@echo "... rbfnetwork.s"
+	@echo "... src/rbfn_bindings.o"
+	@echo "... src/rbfn_bindings.i"
+	@echo "... src/rbfn_bindings.s"
+	@echo "... src/rbfnetwork.o"
+	@echo "... src/rbfnetwork.i"
+	@echo "... src/rbfnetwork.s"
 .PHONY : help
 
 
