@@ -108,11 +108,10 @@ class RbfNetwork{
 		typedef boost::numeric::ublas::matrix<vt> Matrix;
 		typedef boost::numeric::ublas::vector<vt> Vector;
 	
-		RbfNetwork(unsigned int input_size, unsigned int output_size, vt learning_rate, vt sigma);
+		RbfNetwork(unsigned int input_size, unsigned int output_size, vt sigma);
 		RbfNetwork(std::string filename);
 		
 		~RbfNetwork();
-		void add_kernel(const Vector& center);
 		Vector first_layer_output(const Vector& input) const;
 		Vector output(const Vector& input) const;
 		Matrix first_layer_output(const Matrix& inputs) const ;
@@ -120,12 +119,7 @@ class RbfNetwork{
 		boost::tuple<RbfNetwork::Vector, vt> output_conf(const Vector& input) const ;
 		boost::tuples::tuple<RbfNetwork::Matrix, RbfNetwork::Vector> output_conf(const Matrix& input) const;
 		Matrix lsqtrain(const Matrix& input,const Matrix& output);
-		Vector gdtrain(const Vector& input, const Vector& target);
-		Vector gdtrain(const Matrix& input, const Matrix& target);
-		boost::tuples::tuple<RbfNetwork::Vector, vt, unsigned int> output_conf_index(const Vector& input) const;
-		void remove_kernels(const std::set<unsigned int >& index);
 		void select_random_kernels(const Matrix& input, unsigned int size);
-		unsigned int remove_unused_nodes(Matrix input, vt thr);
 		
 
 		const Matrix& weights() const
@@ -133,7 +127,6 @@ class RbfNetwork{
 			return m_weights;
 		}
 
-		vt minDistFromKernel(const Vector& vec) const;
 		unsigned int num_kernels() const;
 
 		vt sigma() const
@@ -162,16 +155,6 @@ class RbfNetwork{
 		}
 		void save(std::string filename) const;
 
-		void setAddkernels ( bool theValue )
-		{
-			m_addkernels = theValue;
-		}
-	
-
-		bool addkernels() const
-		{
-			return m_addkernels;
-		}
 
 		bool setKernels ( const Matrix& theValue )
 		{
@@ -181,16 +164,9 @@ class RbfNetwork{
 			
 			m_kernels = theValue;
 
-#ifdef CONSTANT
 			if (m_kernels.size1() != m_weights.size1() - 1) {
 				unsigned int size = m_kernels.size1() + 1;
-#else
-			if (m_kernels.size1() != m_weights.size1()) {
-				unsigned int size = m_kernels.size1();
-#endif
 				m_weights = boost::numeric::ublas::zero_matrix<Matrix::value_type>(size,m_output_size);
-				m_oldw = boost::numeric::ublas::zero_matrix<Matrix::value_type>(m_weights.size1(),m_weights.size2());
-				m_oldDerr = boost::numeric::ublas::zero_matrix<Matrix::value_type>(m_weights.size1(),m_weights.size2());
 //				std::cerr<<"The new kernel matrix has a different size. The weights are reset"<<std::endl;
 				return false;
 			}
@@ -206,15 +182,8 @@ class RbfNetwork{
 			//and the function will return false
 			
 			m_weights = theValue;
-			m_oldw = boost::numeric::ublas::zero_matrix<Matrix::value_type>(m_weights.size1(),m_weights.size2());
-			m_oldDerr = boost::numeric::ublas::zero_matrix<Matrix::value_type>(m_weights.size1(),m_weights.size2());
-#ifdef CONSTANT
 			if (m_kernels.size1() != m_weights.size1()-1) {
 				unsigned int size = m_weights.size1() -1;
-#else
-			if (m_kernels.size1() != m_weights.size1()) {
-				unsigned int size = m_weights.size1();
-#endif
 				
 				m_kernels = boost::numeric::ublas::zero_matrix<Matrix::value_type>(size,m_input_size);
 //				std::cerr<<"The new weights matrix has a different size. The kernels are reset"<<std::endl;
@@ -228,36 +197,20 @@ class RbfNetwork{
 	protected:
 		unsigned int m_input_size;
 		unsigned int m_output_size;
-		Vector m_learning_rate;
 		vt m_sigma;
 		Matrix m_kernels;
 		Matrix m_weights;
-		Matrix m_oldw;
-		Matrix m_oldDerr;
-		vt m_lveta;
-		bool m_addkernels;
-		vt m_nimin;
-		bool m_firsttrain;
 		
 	protected:
 		RbfNetwork() {/*this is here just for serialization... it does nothing, so don't use it!*/};
 		void init_weights(vt a, vt b,unsigned int weightnumber);
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
-			ar & m_firsttrain;
-			ar & m_addkernels;
 			ar & m_input_size;
-			ar & m_learning_rate;
-			ar & m_lveta;
 			ar & m_output_size;
 			ar & m_sigma;
-			ar & m_lveta;
-			ar & m_nimin;
 			ar & m_kernels;
 			ar & m_weights;	
-			ar & m_oldDerr;
-			ar & m_oldw;
 		};
-		vt armijo(const Vector& Derr, const Vector& oldDerr,const Vector& w, const Vector& oldw, const Vector& kernels_outputs, vt target) ;
 };
 
 #endif

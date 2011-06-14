@@ -107,14 +107,14 @@ class RbfClassifier(RbfNetwork):
     def __init__(self,  *args):
         if len(args) == 1:
             RbfNetwork.__init__(self,  args[0])
-        elif len(args) == 4:
-            (num_input,  num_classes, learning_rate, sigma) = args
+        elif len(args) == 3:
+            (num_input,  num_classes, sigma) = args
             if num_classes <= 1:
                 raise DimensionError("num_classes must be > 1")
-            RbfNetwork.__init__(self,  num_input,  num_classes,  learning_rate,  sigma)
+            RbfNetwork.__init__(self,  num_input,  num_classes, sigma)
             self.__indeces = []
         else:
-            raise TypeError("Wrong number of arguments, it should be either 4 or 1")
+            raise TypeError("Wrong number of arguments, it should be either 3 or 1")
 
     def select_random_kernels(self,  input,  number):
 		newinput = numpy.asarray(input)

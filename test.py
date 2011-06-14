@@ -5,7 +5,7 @@ execfile("__init__.py")
 
 input1 = np.random.rand(20, 4)
 output1 = np.random.rand(20, 1)
-net1 = RbfNetwork(4, 1, 0, np.std(input1))
+net1 = RbfNetwork(4, 1, np.std(input1))
 net1.select_random_kernels(input1, 2)
 net1.lsqtrain(input1,  output1)
 print "First output: "
@@ -13,7 +13,7 @@ print net1.output(input1)[1]
 
 input2 = np.random.rand(20, 1)
 output2 = np.random.rand(20, 1)
-net2 = RbfNetwork(1,1, 0, np.std(input2))
+net2 = RbfNetwork(1,1, np.std(input2))
 net2.select_random_kernels(input2, 2)
 net2.lsqtrain(input2,  output2)
 print "Second output: "
@@ -25,7 +25,7 @@ net3 = cPickle.loads(s)
 print "Depickled net kernels: ", net3.kernels
 
 
-classifier = RbfClassifier(2,2,0,0.1)
+classifier = RbfClassifier(2,2,0.1)
 inputs = np.random.rand(1000,2)
 outs = []
 for i in inputs:

@@ -12,7 +12,7 @@ BOOST_PYTHON_MODULE(libpyrbfnet) {
     import_array();
 
     typedef RBFN_Wrapper::vt vt;
-    bp::class_<RBFN_Wrapper> ("PyRBFNetwork", bp::init< unsigned int, unsigned int, vt, vt >())
+    bp::class_<RBFN_Wrapper> ("PyRBFNetwork", bp::init< unsigned int, unsigned int, vt >())
 		.def(bp::init<std::string>())
 		.def("init_weights", &RBFN_Wrapper::init_weights)
 		.def("output", &RBFN_Wrapper::output)
@@ -27,6 +27,7 @@ BOOST_PYTHON_MODULE(libpyrbfnet) {
 		.def("get_output_size", &RBFN_Wrapper::output_size)
 		.def("get_sigma", &RBFN_Wrapper::sigma)
 		.def("set_sigma", &RBFN_Wrapper::setSigma)
+		.def("output_conf", &RBFN_Wrapper::output_conf)
 
 		.def_pickle(rbfnetwork_pickle_suite())
 		;

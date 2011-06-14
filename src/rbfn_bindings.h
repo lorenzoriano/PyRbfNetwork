@@ -104,8 +104,8 @@ template<class Matrix> PyObject* matrix_to_object(const Matrix& mat)  {
 class RBFN_Wrapper : public RbfNetwork {
 
 public:
-	RBFN_Wrapper(unsigned int input_size, unsigned int output_size, float learning_rate, float sigma) :
-		RbfNetwork(input_size, output_size, learning_rate, sigma) {}
+	RBFN_Wrapper(unsigned int input_size, unsigned int output_size, vt sigma) :
+		RbfNetwork(input_size, output_size, sigma) {}
 
 	RBFN_Wrapper(std::string filename) : RbfNetwork(filename) {}
 
@@ -136,6 +136,21 @@ public:
 
 		Matrix matout = RbfNetwork::lsqtrain(mat_input, mat_target);
 		return matrix_to_object(matout);
+	}
+
+	boost::python::tuple output_conf(PyObject* input) const {
+
+		using  boost::python::handle;
+		using  boost::python::make_tuple;
+
+		Matrix mat_input = matrix_from_object<Matrix>(input);
+		boost::tuples::tuple<Matrix, Vector> res = RbfNetwork::output_conf(mat_input);
+
+		boost::python::object o1( handle<>(
+				matrix_to_object(res.get<0>())));
+		boost::python::object o2( handle<>(
+				vector_to_object(res.get<1>())));
+		return make_tuple(o1,o2);
 	}
 
 	PyObject* weights() const {
@@ -170,7 +185,7 @@ struct rbfnetwork_pickle_suite : boost::python::pickle_suite
 		unsigned int input_size = net.input_size();
 		unsigned int output_size = net.output_size();
 		float sigma = net.sigma();
-		return boost::python::make_tuple(input_size, output_size, 0, sigma);
+		return boost::python::make_tuple(input_size, output_size, sigma);
 	}
 
 
