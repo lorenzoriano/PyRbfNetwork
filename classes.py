@@ -109,12 +109,26 @@ class RbfClassifier(RbfNetwork):
             if num_classes <= 1:
                 raise DimensionError("num_classes must be > 1")
             RbfNetwork.__init__(self,  num_input,  num_classes,  0,  sigma)
-            self.__numkernels = 0
+            #self.__numkernels = 0
+            self.indeces = []
         else:
-            raise TypeError("Wrong number of arguments")
+            raise TypeError("Wrong number of arguments, it should be either 3 or 1")
 
     def select_random_kernels(self,  input,  number):
-        self.__numkernels = number
+        #self.__numkernels = number
+
+		newinput = numpy.asarray(input)
+		if newinput.ndim != 2:
+			raise DimensionError("input has to be a matrix")
+		if newinput.shape[1] != self.input_size:
+			raise DimensionError("input dimension differs from the RBF one")
+		max_elements = newinput.shape[0]
+		indeces = set()
+		while len(indeces) != number:
+			indeces.add(numpy.random.randint(0, max_elements))
+
+		self.indeces = list(indeces)
+		self.kernels = newinput[self.indeces,  :]
 
     def __generate_indeces(self,  max_elements):
         indeces = set()
@@ -148,12 +162,16 @@ class RbfClassifier(RbfNetwork):
         if newinput.shape[1] <=0:
             raise DimensionError("input has <=0 columns")
 
-        indeces = self.__generate_indeces(newinput.shape[0])
-        self.kernels = newinput[indeces,  :]
-        self.weights = newoutput[indeces,  :]
+        #indeces = self.__generate_indeces(newinput.shape[0])
+        #self.kernels = newinput[indeces,  :]
+
+        #self.weights = newoutput[self.indeces,  :]
+
+        newweights = numpy.vstack( (numpy.zeros((1,newoutput.shape[1])), newoutput[self.indeces,  :]) )
+        self.weights = newweights
 
         netout = self.output(newinput)
-        return netout - matrix2classes(newoutput)
+        return netout != matrix2classes(newoutput)
 
     def output(self,  input):
         output = RbfNetwork.output(self,  input)

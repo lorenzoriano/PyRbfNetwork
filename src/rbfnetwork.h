@@ -29,6 +29,9 @@
 #include <set>
 
 #include <exception>
+
+#define CONSTANT
+
 struct rbfn_value_exception : std::exception
 {
     rbfn_value_exception(std::string str) {
@@ -140,7 +143,7 @@ class RbfNetwork{
 
 		void setSigma(vt theValue)
 		{
-			m_sigma = theValue;
+			m_sigma = theValue * theValue;
 		}
 
 		const Matrix& kernels() const
@@ -177,14 +180,15 @@ class RbfNetwork{
 			//and the function will return false
 			
 			m_kernels = theValue;
-			
+
+#ifdef CONSTANT
+			if (m_kernels.size1() != m_weights.size1() - 1) {
+				unsigned int size = m_kernels.size1() + 1;
+#else
 			if (m_kernels.size1() != m_weights.size1()) {
 				unsigned int size = m_kernels.size1();
-#ifdef CONSTANT
-				m_weights = boost::numeric::ublas::zero_matrix<Matrix::value_type>(1+size,m_output_size);
-#else
-				m_weights = boost::numeric::ublas::zero_matrix<Matrix::value_type>(size,m_output_size);
 #endif
+				m_weights = boost::numeric::ublas::zero_matrix<Matrix::value_type>(size,m_output_size);
 				m_oldw = boost::numeric::ublas::zero_matrix<Matrix::value_type>(m_weights.size1(),m_weights.size2());
 				m_oldDerr = boost::numeric::ublas::zero_matrix<Matrix::value_type>(m_weights.size1(),m_weights.size2());
 				std::cerr<<"The new kernel matrix has a different size. The weights are reset"<<std::endl;
@@ -204,8 +208,14 @@ class RbfNetwork{
 			m_weights = theValue;
 			m_oldw = boost::numeric::ublas::zero_matrix<Matrix::value_type>(m_weights.size1(),m_weights.size2());
 			m_oldDerr = boost::numeric::ublas::zero_matrix<Matrix::value_type>(m_weights.size1(),m_weights.size2());
+#ifdef CONSTANT
+			if (m_kernels.size1() != m_weights.size1()-1) {
+				unsigned int size = m_weights.size1() -1;
+#else
 			if (m_kernels.size1() != m_weights.size1()) {
 				unsigned int size = m_weights.size1();
+#endif
+				
 				m_kernels = boost::numeric::ublas::zero_matrix<Matrix::value_type>(size,m_input_size);
 				std::cerr<<"The new weights matrix has a different size. The kernels are reset"<<std::endl;
 				return false;
