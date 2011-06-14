@@ -9,8 +9,97 @@
 #include <string>
 #include "rbfnetwork.h"
 #include "storage_adaptors.hpp"
+#include "normalizer.h"
 
 namespace ublas = boost::numeric::ublas;
+
+PyArrayObject* arrayobject_from_object(PyObject* o) {
+	PyArrayObject* array = (PyArrayObject*)PyArray_FROMANY(o,
+					NPY_DOUBLE,1,1, NPY_CARRAY);
+
+	//A few checks
+	if (array == NULL)
+		throw rbfn_value_exception("Error during conversion. Input is not a 1d vector?");
+	if (array->nd > 1)
+		throw rbfn_value_exception("Wrong number of dimensions");
+	return array;
+}
+
+PyArrayObject* matrixobject_from_object(PyObject* o)  {
+	PyArrayObject* array = (PyArrayObject*)PyArray_FROMANY(o,
+					NPY_DOUBLE,2,2, NPY_CARRAY);
+
+	//A few checks
+	if (array == NULL)
+		throw rbfn_value_exception("Error during conversion. Input is not a 2d matrix?");
+	if (array->nd > 2)
+		throw rbfn_value_exception("Wrong number of dimensions");
+
+	return array;
+}
+
+template<class Vector> Vector vector_from_object(PyObject *o) {
+	PyArrayObject* array_o = arrayobject_from_object(o);
+
+	typedef typename Vector::value_type vt;
+	vt* data = ( vt*)PyArray_DATA(array_o);
+	size_t size = PyArray_DIM(array_o, 0);
+
+	return ublas::make_vector_from_pointer(size, data);
+
+}
+template<class Matrix> Matrix matrix_from_object(PyObject *o) {
+		PyArrayObject* matrix_o = matrixobject_from_object(o);
+
+		typedef typename Matrix::value_type vt;
+		vt* data = (vt*)PyArray_DATA(matrix_o);
+
+		size_t size1 = PyArray_DIM(matrix_o, 0);
+		size_t size2 = PyArray_DIM(matrix_o, 1);
+
+		return ublas::make_matrix_from_pointer(size1, size2, data);
+
+}
+
+template<class Vector> PyObject* vector_to_object(Vector vec) {
+	typedef typename Vector::value_type vt;
+
+	size_t size = vec.size();
+
+	npy_intp dims[1];
+	dims[0] = size;
+
+	PyObject* out = PyArray_SimpleNew(1,dims, NPY_DOUBLE);
+	for (unsigned int i=0; i<size; i++) {
+		*((vt*)PyArray_GETPTR1(out, i)) =  vec(i);
+	}
+
+	return out;
+}
+
+template<class Matrix> PyObject* matrix_to_object(const Matrix& mat)  {
+
+	typedef typename Matrix::value_type vt;
+	size_t size1 = mat.size1();
+	size_t size2 = mat.size2();
+
+//		npy_intp* dims = new npy_intp[2];
+	npy_intp dims[2];
+	dims[0] = size1;
+	dims[1] = size2;
+
+
+	PyObject* out = PyArray_SimpleNew(2, dims, NPY_DOUBLE);
+
+	for (unsigned int i=0; i<size1; i++) {
+		for (unsigned int j=0; j<size2; j++) {
+			*((vt*)PyArray_GETPTR2(out, i,j)) = mat(i,j);
+		}
+	}
+
+	return out;
+}
+
 
 class RBFN_Wrapper : public RbfNetwork {
 
@@ -25,132 +114,50 @@ public:
 	}
 
 	void select_random_kernels(PyObject* input, unsigned int size) {
-		Matrix mat = __matrix_from_object(input);
+		Matrix mat = matrix_from_object<Matrix>(input);
 		RbfNetwork::select_random_kernels(mat, size);
 	}
 
 	PyObject* output(PyObject* input) const {
-		Matrix mat = __matrix_from_object(input);
+		Matrix mat = matrix_from_object<Matrix>(input);
 		Matrix matout = RbfNetwork::output(mat);
-		return __matrix_to_object(matout);
+		return matrix_to_object(matout);
 	}
 
 	PyObject* first_layer_output(PyObject* input) const {
-		Matrix mat = __matrix_from_object(input);
+		Matrix mat = matrix_from_object<Matrix>(input);
 		Matrix matout = RbfNetwork::first_layer_output(mat);
-		return __matrix_to_object(matout);
+		return matrix_to_object(matout);
 	}
 
 	PyObject* lsqtrain(PyObject* input, PyObject* target) {
-		Matrix mat_input = __matrix_from_object(input);
-		Matrix mat_target = __matrix_from_object(target);
+		Matrix mat_input = matrix_from_object<Matrix>(input);
+		Matrix mat_target = matrix_from_object<Matrix>(target);
 
 		Matrix matout = RbfNetwork::lsqtrain(mat_input, mat_target);
-		return __matrix_to_object(matout);
+		return matrix_to_object(matout);
 	}
 
 	PyObject* weights() const {
-		return __matrix_to_object(RbfNetwork::weights());
+		return matrix_to_object(RbfNetwork::weights());
 	}
 
 	PyObject* kernels() const {
-		return __matrix_to_object(RbfNetwork::kernels());
+		return matrix_to_object(RbfNetwork::kernels());
 	}
 
 	bool set_weights(PyObject* value) {
-		Matrix mat_value = __matrix_from_object(value);
+		Matrix mat_value = matrix_from_object<Matrix>(value);
 		return RbfNetwork::setWeights(mat_value);
 	}
 
 	bool set_kernels(PyObject* value) {
-		Matrix mat_value = __matrix_from_object(value);
+		Matrix mat_value = matrix_from_object<Matrix>(value);
 		return RbfNetwork::setKernels(mat_value);
 	}
 
 
 private:
-	RbfNetwork::Vector __vector_from_object(PyObject *o) const {
-		PyArrayObject* array_o = __arrayobject_from_object(o);
-
-		vt* data = (vt*)PyArray_DATA(array_o);
-		size_t size = PyArray_DIM(array_o, 0);
-
-		return ublas::make_vector_from_pointer(size, data);
-
-	}
-	RbfNetwork::Matrix __matrix_from_object(PyObject *o) const {
-			PyArrayObject* matrix_o = __matrixobject_from_object(o);
-
-			vt* data = (vt*)PyArray_DATA(matrix_o);
-
-			size_t size1 = PyArray_DIM(matrix_o, 0);
-			size_t size2 = PyArray_DIM(matrix_o, 1);
-
-			return ublas::make_matrix_from_pointer(size1, size2, data);
-
-	}
-
-	PyObject* __vector_to_object(Vector vec) const {
-		size_t size = vec.size();
-
-//		npy_intp* dims = new npy_intp[1];
-		npy_intp dims[1];
-		dims[0] = size;
-
-		PyObject* out = PyArray_SimpleNew(1,dims, NPY_DOUBLE);
-		for (unsigned int i=0; i<size; i++) {
-			*((vt*)PyArray_GETPTR1(out, i)) =  vec(i);
-		}
-
-		return out;
-	}
-
-	PyObject* __matrix_to_object(const Matrix& mat) const {
-
-		size_t size1 = mat.size1();
-		size_t size2 = mat.size2();
-
-//		npy_intp* dims = new npy_intp[2];
-		npy_intp dims[2];
-		dims[0] = size1;
-		dims[1] = size2;
-
-
-		PyObject* out = PyArray_SimpleNew(2, dims, NPY_DOUBLE);
-
-		for (unsigned int i=0; i<size1; i++) {
-			for (unsigned int j=0; j<size2; j++) {
-				*((vt*)PyArray_GETPTR2(out, i,j)) = mat(i,j);
-			}
-		}
-
-		return out;
-	}
-
-	PyArrayObject* __arrayobject_from_object(PyObject* o) const {
-		PyArrayObject* array = (PyArrayObject*)PyArray_FROMANY(o,
-						NPY_DOUBLE,1,1, NPY_CARRAY);
-
-		//A few checks
-		if (array == NULL)
-			throw rbfn_value_exception("Error during conversion. Input is not a 1d vector?");
-		if (array->nd > 1)
-			throw rbfn_value_exception("Wrong number of dimensions");
-		return array;
-	}
-
-	PyArrayObject* __matrixobject_from_object(PyObject* o) const {
-		PyArrayObject* array = (PyArrayObject*)PyArray_FROMANY(o,
-						NPY_DOUBLE,2,2, NPY_CARRAY);
-
-		//A few checks
-		if (array == NULL)
-			throw rbfn_value_exception("Error during conversion. Input is not a 2d matrix?");
-		if (array->nd > 2)
-			throw rbfn_value_exception("Wrong number of dimensions");
-
-		return array;
-	}
 
 };
 
@@ -189,5 +196,37 @@ struct rbfnetwork_pickle_suite : boost::python::pickle_suite
 		io >> *rnet;
 	}
 };
+
+class Normalizer_Wrapper : public Normalizer {
+
+public:
+
+	Normalizer_Wrapper() : Normalizer() {}
+	Normalizer_Wrapper(PyObject* min, PyObject* max) :
+		Normalizer(vector_from_object<Vector>(min), vector_from_object<Vector>(max)) {}
+
+	void calculate_from_input(PyObject* input) {
+		Normalizer::calculate_from_input(matrix_from_object<Matrix>(input));
+	}
+	PyObject* deNormalize(PyObject* input) {
+		Matrix ret = Normalizer::deNormalize(matrix_from_object<Matrix>(input));
+		return matrix_to_object(ret);
+	}
+	PyObject* normalize(PyObject* input) {
+		Matrix ret = Normalizer::normalize(matrix_from_object<Matrix>(input));
+		return matrix_to_object(ret);
+	}
+
+	PyObject* min() {
+		return vector_to_object(m_min);
+	}
+
+	PyObject* max() {
+		return vector_to_object(m_max);
+	}
+
+
+};
+
 
 #endif

@@ -1,4 +1,5 @@
 #include "rbfn_bindings.h"
+#include "normalizer.h"
 #include <boost/python.hpp>
 #include <cstdlib>
 #include <ctime>
@@ -28,6 +29,15 @@ BOOST_PYTHON_MODULE(libpyrbfnet) {
 		.def("set_sigma", &RBFN_Wrapper::setSigma)
 
 		.def_pickle(rbfnetwork_pickle_suite())
+		;
+
+    bp::class_<Normalizer_Wrapper>("PyNormalizer")
+		.def(bp::init<PyObject*, PyObject*>())
+		.def("calculate_from_input", &Normalizer_Wrapper::calculate_from_input)
+		.def("deNormalize", &Normalizer_Wrapper::deNormalize)
+		.def("normalize", &Normalizer_Wrapper::normalize)
+		.def("min", &Normalizer_Wrapper::min)
+		.def("max", &Normalizer_Wrapper::max)
 		;
 
 }
