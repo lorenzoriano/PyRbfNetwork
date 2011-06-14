@@ -1,7 +1,10 @@
 __all__ = ["RbfNetwork",  "RbfClassifier", "Normalizer"]
 
 import libpyrbfnet
+import classes
 
-from classes import RbfNetwork
-from classes import RbfClassifier
-from libpyrbfnet import PyNormalizer as Normalizer
+RbfNetwork = classes.RbfNetwork
+RbfClassifier = classes.RbfClassifier
+Normalizer = libpyrbfnet.PyNormalizer
+
+
