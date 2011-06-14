@@ -191,7 +191,7 @@ class RbfNetwork{
 				m_weights = boost::numeric::ublas::zero_matrix<Matrix::value_type>(size,m_output_size);
 				m_oldw = boost::numeric::ublas::zero_matrix<Matrix::value_type>(m_weights.size1(),m_weights.size2());
 				m_oldDerr = boost::numeric::ublas::zero_matrix<Matrix::value_type>(m_weights.size1(),m_weights.size2());
-				std::cerr<<"The new kernel matrix has a different size. The weights are reset"<<std::endl;
+//				std::cerr<<"The new kernel matrix has a different size. The weights are reset"<<std::endl;
 				return false;
 			}
 			else {
@@ -217,7 +217,7 @@ class RbfNetwork{
 #endif
 				
 				m_kernels = boost::numeric::ublas::zero_matrix<Matrix::value_type>(size,m_input_size);
-				std::cerr<<"The new weights matrix has a different size. The kernels are reset"<<std::endl;
+//				std::cerr<<"The new weights matrix has a different size. The kernels are reset"<<std::endl;
 				return false;
 			}
 			else {
