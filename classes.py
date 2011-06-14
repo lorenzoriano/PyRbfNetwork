@@ -30,6 +30,9 @@ class RbfNetwork(libpyrbfnet.PyRBFNetwork):
 
         return libpyrbfnet.PyRBFNetwork.output(self, newinput)
 
+    def __call__(self, input):
+        return self.output(input)
+
     def lsqtrain(self,  input,  output):
         """
         Perform least sqare training over input/outputs
@@ -109,14 +112,11 @@ class RbfClassifier(RbfNetwork):
             if num_classes <= 1:
                 raise DimensionError("num_classes must be > 1")
             RbfNetwork.__init__(self,  num_input,  num_classes,  0,  sigma)
-            #self.__numkernels = 0
             self.indeces = []
         else:
             raise TypeError("Wrong number of arguments, it should be either 3 or 1")
 
     def select_random_kernels(self,  input,  number):
-        #self.__numkernels = number
-
 		newinput = numpy.asarray(input)
 		if newinput.ndim != 2:
 			raise DimensionError("input has to be a matrix")
@@ -130,16 +130,9 @@ class RbfClassifier(RbfNetwork):
 		self.indeces = list(indeces)
 		self.kernels = newinput[self.indeces,  :]
 
-    def __generate_indeces(self,  max_elements):
-        indeces = set()
-        while len(indeces) != self.__numkernels:
-            indeces.add(numpy.random.randint(0, max_elements))
-        return list(indeces)
-
     def lsqtrain(self,  input,  output):
 
         newinput = numpy.asarray(input)
-#        newoutput = numpy.asarray(output,  dtype=numpy.float32,  order="C")
         newoutput = classes2matrix(output)
 
         if newinput.ndim != newoutput.ndim:
@@ -162,20 +155,26 @@ class RbfClassifier(RbfNetwork):
         if newinput.shape[1] <=0:
             raise DimensionError("input has <=0 columns")
 
-        #indeces = self.__generate_indeces(newinput.shape[0])
-        #self.kernels = newinput[indeces,  :]
-
-        #self.weights = newoutput[self.indeces,  :]
-
         newweights = numpy.vstack( (numpy.zeros((1,newoutput.shape[1])), newoutput[self.indeces,  :]) )
         self.weights = newweights
 
         netout = self.output(newinput)
-        return netout != matrix2classes(newoutput)
+        return netout != self.matrix2classes(newoutput)
 
     def output(self,  input):
         output = RbfNetwork.output(self,  input)
-        return matrix2classes(output)
+        return self.matrix2classes(output)
 
     def raw_output(self,  input):
         return RbfNetwork.output(self,  input)
+
+    def __call__(self, input):
+        return self.output(input)
+
+    @staticmethod
+    def matrix2classes(m):
+        return matrix2classes(m)
+
+    @staticmethod
+    def classes2matrix(c):
+        return classes2matrix
