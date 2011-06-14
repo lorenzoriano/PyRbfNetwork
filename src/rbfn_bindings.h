@@ -175,26 +175,39 @@ struct rbfnetwork_pickle_suite : boost::python::pickle_suite
 
 
 	static
-	boost::python::str
-	getstate(const RBFN_Wrapper& net)
+	boost::python::tuple
+	getstate(boost::python::object  net_obj)
 	{
+		RBFN_Wrapper const& net = boost::python::extract<RBFN_Wrapper const&>(net_obj)();
+
 		std::stringstream s;
 		boost::archive::text_oarchive io(s);
 		const RBFN_Wrapper* rnet= dynamic_cast<const RBFN_Wrapper*>(&net);
 		io << *rnet;
-		return s.str().c_str();
+		return boost::python::make_tuple(
+				net_obj.attr("__dict__"),
+				s.str()
+				);
 	}
 
 	static
 	void
-	setstate(RBFN_Wrapper& net, std::string state)
+	setstate(boost::python::object  net_obj, boost::python::tuple state)
 	{
+		RBFN_Wrapper& net = boost::python::extract<RBFN_Wrapper &>(net_obj)();
+
+		boost::python::dict d = boost::python::extract<boost::python::dict>(
+				net_obj.attr("__dict__"))();
+		d.update(state[0]);
+
 		std::stringstream s;
-		s << state;
+		s << boost::python::extract<std::string>(state[1])();
 		boost::archive::text_iarchive io(s);
 		RBFN_Wrapper* rnet= dynamic_cast<RBFN_Wrapper*>(&net);
 		io >> *rnet;
 	}
+
+	static bool getstate_manages_dict() { return true; }
 };
 
 class Normalizer_Wrapper : public Normalizer {
@@ -226,6 +239,44 @@ public:
 	}
 
 
+};
+
+struct normalizer_pickle_suite : boost::python::pickle_suite
+{
+	static
+	boost::python::tuple
+	getstate(boost::python::object  norm_obj)
+	{
+		Normalizer_Wrapper const& norm = boost::python::extract<Normalizer_Wrapper const&>(norm_obj)();
+
+		std::stringstream s;
+		boost::archive::text_oarchive io(s);
+		const Normalizer_Wrapper* rnorm= dynamic_cast<const Normalizer_Wrapper*>(&norm);
+		io << *rnorm;
+		return boost::python::make_tuple(
+				norm_obj.attr("__dict__"),
+				s.str()
+				);
+	}
+
+	static
+	void
+	setstate(boost::python::object  norm_obj, boost::python::tuple state)
+	{
+		Normalizer_Wrapper& norm = boost::python::extract<Normalizer_Wrapper &>(norm_obj)();
+
+		boost::python::dict d = boost::python::extract<boost::python::dict>(
+				norm_obj.attr("__dict__"))();
+		d.update(state[0]);
+
+		std::stringstream s;
+		s << boost::python::extract<std::string>(state[1])();
+		boost::archive::text_iarchive io(s);
+		Normalizer_Wrapper* rnorm= dynamic_cast<Normalizer_Wrapper*>(&norm);
+		io >> *rnorm;
+	}
+
+	static bool getstate_manages_dict() { return true; }
 };
 
 

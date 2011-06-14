@@ -25,7 +25,7 @@ net3 = cPickle.loads(s)
 print "Depickled net kernels: ", net3.kernels
 
 
-classifier = RbfClassifier(2,2,0.1)
+classifier = RbfClassifier(2,2,0,0.1)
 inputs = np.random.rand(1000,2)
 outs = []
 for i in inputs:

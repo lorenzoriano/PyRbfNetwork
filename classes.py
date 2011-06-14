@@ -107,14 +107,14 @@ class RbfClassifier(RbfNetwork):
     def __init__(self,  *args):
         if len(args) == 1:
             RbfNetwork.__init__(self,  args[0])
-        elif len(args) == 3:
-            (num_input,  num_classes,  sigma) = args
+        elif len(args) == 4:
+            (num_input,  num_classes, learning_rate, sigma) = args
             if num_classes <= 1:
                 raise DimensionError("num_classes must be > 1")
-            RbfNetwork.__init__(self,  num_input,  num_classes,  0,  sigma)
-            self.indeces = []
+            RbfNetwork.__init__(self,  num_input,  num_classes,  learning_rate,  sigma)
+            self.__indeces = []
         else:
-            raise TypeError("Wrong number of arguments, it should be either 3 or 1")
+            raise TypeError("Wrong number of arguments, it should be either 4 or 1")
 
     def select_random_kernels(self,  input,  number):
 		newinput = numpy.asarray(input)
@@ -127,8 +127,8 @@ class RbfClassifier(RbfNetwork):
 		while len(indeces) != number:
 			indeces.add(numpy.random.randint(0, max_elements))
 
-		self.indeces = list(indeces)
-		self.kernels = newinput[self.indeces,  :]
+		self.__indeces = list(indeces)
+		self.kernels = newinput[self.__indeces,  :]
 
     def lsqtrain(self,  input,  output):
 
@@ -155,7 +155,7 @@ class RbfClassifier(RbfNetwork):
         if newinput.shape[1] <=0:
             raise DimensionError("input has <=0 columns")
 
-        newweights = numpy.vstack( (numpy.zeros((1,newoutput.shape[1])), newoutput[self.indeces,  :]) )
+        newweights = numpy.vstack( (numpy.zeros((1,newoutput.shape[1])), newoutput[self.__indeces,  :]) )
         self.weights = newweights
 
         netout = self.output(newinput)

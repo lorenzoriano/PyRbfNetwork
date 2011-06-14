@@ -38,6 +38,8 @@ BOOST_PYTHON_MODULE(libpyrbfnet) {
 		.def("normalize", &Normalizer_Wrapper::normalize)
 		.def("min", &Normalizer_Wrapper::min)
 		.def("max", &Normalizer_Wrapper::max)
+
+		.def_pickle(normalizer_pickle_suite())
 		;
 
 }
