@@ -80,7 +80,7 @@ class Normalizer{
 			return ret;
 		}
 		
-		Matrix deNormalize(const Matrix& input) const {
+		Matrix denormalize(const Matrix& input) const {
 			
 			Matrix ret(input.size1(), input.size2());
 			for (unsigned int i=0; i<input.size1(); i++)

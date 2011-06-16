@@ -35,7 +35,7 @@ BOOST_PYTHON_MODULE(libpyrbfnet) {
     bp::class_<Normalizer_Wrapper>("PyNormalizer")
 		.def(bp::init<PyObject*, PyObject*>())
 		.def("calculate_from_input", &Normalizer_Wrapper::calculate_from_input)
-		.def("deNormalize", &Normalizer_Wrapper::deNormalize)
+		.def("denormalize", &Normalizer_Wrapper::denormalize)
 		.def("normalize", &Normalizer_Wrapper::normalize)
 		.def("min", &Normalizer_Wrapper::min)
 		.def("max", &Normalizer_Wrapper::max)

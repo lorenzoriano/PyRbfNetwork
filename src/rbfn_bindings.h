@@ -236,8 +236,8 @@ public:
 	void calculate_from_input(PyObject* input) {
 		Normalizer::calculate_from_input(matrix_from_object<Matrix>(input));
 	}
-	PyObject* deNormalize(PyObject* input) {
-		Matrix ret = Normalizer::deNormalize(matrix_from_object<Matrix>(input));
+	PyObject* denormalize(PyObject* input) {
+		Matrix ret = Normalizer::denormalize(matrix_from_object<Matrix>(input));
 		return matrix_to_object(ret);
 	}
 	PyObject* normalize(PyObject* input) {
