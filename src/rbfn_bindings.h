@@ -124,6 +124,10 @@ public:
 		return matrix_to_object(matout);
 	}
 
+    PyObject* sample_inputs(unsigned int n) const {
+        return matrix_to_object(RbfNetwork::sample_inputs(n));
+    }
+
 	PyObject* first_layer_output(PyObject* input) const {
 		Matrix mat = matrix_from_object<Matrix>(input);
 		Matrix matout = RbfNetwork::first_layer_output(mat);

@@ -1,6 +1,7 @@
 import numpy
 
-def brute_force_training(net, training_set, validation_set, numtrials, classifier=False):
+def brute_force_training(net, training_set, validation_set, numtrials, classifier=False,
+                         min_sigma = 0.001, max_sigma = 1.0, min_kernels = None, max_kernels = None):
     
     train_input, train_output =  training_set
     validate_input, validate_output = validation_set
@@ -9,12 +10,11 @@ def brute_force_training(net, training_set, validation_set, numtrials, classifie
         validate_output = validate_output.reshape( (validate_output.shape[0], 1) )
     else:
         validate_output = validate_output.reshape( (validate_output.shape[0], net.output_size) )
-    
-    min_kernels = train_input.shape[0] / 20
-    max_kernels = train_input.shape[0] / 2
-        
-    min_sigma = 0.001
-    max_sigma = 1.0
+
+    if min_kernels is None:
+        min_kernels = train_input.shape[0] / 20
+    if max_kernels is None:
+        max_kernels = train_input.shape[0] / 2
     
     best_err = numpy.finfo(numpy.float64).max
     for trial in xrange(numtrials):

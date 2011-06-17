@@ -28,6 +28,7 @@ BOOST_PYTHON_MODULE(libpyrbfnet) {
 		.def("get_sigma", &RBFN_Wrapper::sigma)
 		.def("set_sigma", &RBFN_Wrapper::setSigma)
 		.def("output_conf", &RBFN_Wrapper::output_conf)
+		.def("sample_inputs", &RBFN_Wrapper::sample_inputs)
 
 		.def_pickle(rbfnetwork_pickle_suite())
 		;

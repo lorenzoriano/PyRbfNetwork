@@ -80,12 +80,13 @@ namespace boost { namespace numeric { namespace bindings {
 				typedef typename MatrA::value_type val_t;
 				typedef typename traits::type_traits<val_t>::real_type real_t;
 
+				
 				const int m = traits::matrix_size1(A);
 				const int n = traits::matrix_size2(A);
 				const int nrhs = traits::matrix_size2(B);
 				const int maxmn = std::max(m, n);
 				const int minmn = std::min(m, n);
-
+				
 				// sanity checks
 				assert(m >= 0 && n >= 0);
 				assert(nrhs >= 0);

@@ -28,7 +28,8 @@
 namespace ublas = boost::numeric::ublas;
 namespace lapack = boost::numeric::bindings::lapack;
 
-typedef boost::minstd_rand base_generator_type;
+// typedef boost::minstd_rand base_generator_type;
+typedef boost::mt19937 base_generator_type;
 static base_generator_type __static__generator(static_cast<unsigned int>(std::time(0)));
 
 
@@ -157,6 +158,32 @@ boost::tuples::tuple<RbfNetwork::Matrix, RbfNetwork::Vector> RbfNetwork::output_
 RbfNetwork::Matrix RbfNetwork::output(const Matrix& input) const
 {
 	return prod(first_layer_output(input),m_weights);
+}
+
+RbfNetwork::Matrix RbfNetwork::sample_inputs(unsigned int n) const {
+    Matrix out(n, m_input_size);
+
+    //This is to select the kernels
+    boost::uniform_smallint<> uni_dist(0,m_kernels.size1() - 1);
+    boost::variate_generator<base_generator_type&, boost::uniform_smallint<> > rand_kernel(__static__generator, uni_dist);
+
+//     vt variance = sqrt(m_sigma);
+    vt variance = m_sigma;
+    for (unsigned int i=0; i<n; i++) {
+        unsigned int kernel_to_use = rand_kernel();
+        Vector samples(m_input_size);
+
+        for (unsigned int j=0; j<m_input_size; j++) {
+            //Each kernel has the same spherical covariance matrix, so it's pretty straightforward
+            //to generate random numbers from a multi-dimensional kernel
+            vt mean = m_kernels(kernel_to_use, j);
+            boost::normal_distribution<> nd(mean, variance);
+            boost::variate_generator<base_generator_type&, boost::normal_distribution<> > rand_nor(__static__generator, nd);
+            samples(j) = rand_nor();
+        }
+        ublas::row(out,i) = samples;
+    }
+    return out;
 }
 
 RbfNetwork::Matrix RbfNetwork::lsqtrain(const Matrix& input,const Matrix& target)

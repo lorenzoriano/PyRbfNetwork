@@ -30,6 +30,19 @@ class RbfNetwork(libpyrbfnet.PyRBFNetwork):
 
         return libpyrbfnet.PyRBFNetwork.output(self, newinput)
 
+    def output_conf(self, input):
+        newinput = numpy.asarray(input)
+        if newinput.ndim == 1: #dealing with a vector
+            newinput = newinput.reshape( (1, newinput.shape[0]))
+        elif newinput.ndim == 2: #matrix
+            pass
+        else:
+            raise DimensionError("input has to be either a vector or a matrix")
+        if newinput.shape[1] != self.input_size:
+            raise DimensionError("input dimension differs from the RBF one")
+        
+        return libpyrbfnet.PyRBFNetwork.output_conf(self, newinput)
+
     def __call__(self, input):
         return self.output(input)
 
@@ -170,6 +183,10 @@ class RbfClassifier(RbfNetwork):
 
     def __call__(self, input):
         return self.output(input)
+
+    def output_conf(self, input):
+        output, conf = RbfNetwork.output_conf(self,  input)
+        return self.matrix2classes(output), conf
 
     @staticmethod
     def matrix2classes(m):

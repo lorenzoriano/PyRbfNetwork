@@ -120,6 +120,7 @@ class RbfNetwork{
 		boost::tuples::tuple<RbfNetwork::Matrix, RbfNetwork::Vector> output_conf(const Matrix& input) const;
 		Matrix lsqtrain(const Matrix& input,const Matrix& output);
 		void select_random_kernels(const Matrix& input, unsigned int size);
+        Matrix sample_inputs(unsigned int n) const;
 		
 
 		const Matrix& weights() const
